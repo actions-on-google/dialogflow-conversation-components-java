@@ -4,20 +4,25 @@ A simple sample showing the visual conversation components available with Action
 
 ## Setup Instructions
 
-## Webhook
-The sample includes entry points for both Java servlets and AWS Lambda.
-* If using Servlets,
-    1. Delete ActionsAWSHandler.java
-    1. Remove dependencies in build.gradle for AWS.
-    1. Build your project's jar file using gradle.
-    1. Deploy your servlet following instructions on [Google Cloud Platform App Engine](https://cloud.google.com/appengine/)
-* If using AWS lambda,
-    1. Delete ActionsServlet
-    1. Remove corresponding dependencies for Servlets in build.gradle.
-    1. Build the AWS compatible zip file using the buildAWSZip gradle task.
-    1. Deploy the zip in AWS by following instructions at https://aws.amazon.com/lambda/
+### Webhook
+The boilerplate includes entry points for both Google App Engine and AWS Lambda.
 
-## Action configuration
+#### Build for Google Cloud Platform
+    1. Delete ActionsAWSHandler.java
+    1. Remove the following line from build.gradle:
+       1. `apply from: 'build-aws.gradle'`
+    1. Download the [SDK for App Engine](https://cloud.google.com/appengine/docs/flexible/java/download)
+    1. Follow the steps for [Setting up a GCP project](https://cloud.google.com/appengine/docs/flexible/java/using-gradle#setting_up_and_validating_your_project_name_short)
+    1. Deploy to [App Engine using Gradle](https://cloud.google.com/appengine/docs/flexible/java/using-gradle) by running the following command: `gradle appengineDeploy`
+
+#### Build for AWS
+    1. Delete ActionsServlet
+    1. Remove the following line from build.gradle:
+       1. `apply from: 'build-gcp.gradle'`
+    1. Build the AWS Lambda compatible zip file using the buildAWSZip gradle task: `gradle buildAWSZip`
+    1. Deploy the zip file found at `build/distributions/myactions.zip` as an AWS Lambda function by following instructions at https://aws.amazon.com/lambda/
+
+### Action configuration
 1. Use the [Actions on Google Console](https://console.actions.google.com) to add a new project with a name of your choosing and click *Create Project*.
 1. Click *Skip*, located on the top right.
 1. On the left navigation menu under *BUILD*, click on *Actions*. Click on *Add Your First Action* and choose your app's language(s).
