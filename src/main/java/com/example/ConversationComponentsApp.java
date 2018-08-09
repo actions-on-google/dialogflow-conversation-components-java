@@ -140,7 +140,7 @@ public class ConversationComponentsApp extends DialogflowApp {
 
     responseBuilder
             .add("This is the first simple response for a list.")
-            .add(new SelectionList("List title", items))
+            .add(new SelectionList().setTitle("List title").setItems(items))
             .addSuggestions(SUGGESTIONS);
 
     return CompletableFuture.completedFuture(responseBuilder.build());
@@ -173,7 +173,7 @@ public class ConversationComponentsApp extends DialogflowApp {
     responseBuilder
             .add("This is the first simple response for a selection carousel.")
             .addSuggestions(SUGGESTIONS)
-            .add(new SelectionCarousel(items));
+            .add(new SelectionCarousel().setItems(items));
 
     return CompletableFuture.completedFuture(responseBuilder.build());
   }
