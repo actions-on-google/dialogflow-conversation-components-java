@@ -20,11 +20,15 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.actions.api.App;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
-import java.io.*;
 
 /**
  * Handles request received via AWS - API Gateway proxy integration and
@@ -33,8 +37,8 @@ import java.io.*;
  */
 public class ActionsAWSHandler implements RequestStreamHandler {
   // Replace this with your webhook.
-  private App actionsApp = new ConversationComponentsApp();
-  private JSONParser parser = new JSONParser();
+  private final App actionsApp = new ConversationComponentsApp();
+  private final JSONParser parser = new JSONParser();
 
   @Override
   public void handleRequest(InputStream inputStream,

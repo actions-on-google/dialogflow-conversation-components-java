@@ -16,57 +16,76 @@
 
 package com.example;
 
-import com.google.actions.api.*;
+import com.google.actions.api.ActionRequest;
+import com.google.actions.api.ActionResponse;
 import com.google.actions.api.Capability;
+import com.google.actions.api.DialogflowApp;
+import com.google.actions.api.ForIntent;
 import com.google.actions.api.response.ResponseBuilder;
 import com.google.actions.api.response.systemintent.SelectionCarousel;
 import com.google.actions.api.response.systemintent.SelectionList;
-import com.google.api.services.actions_fulfillment.v2.model.*;
-
+import com.google.api.services.actions_fulfillment.v2.model.BasicCard;
+import com.google.api.services.actions_fulfillment.v2.model.Button;
+import com.google.api.services.actions_fulfillment.v2.model.CarouselBrowse;
+import com.google.api.services.actions_fulfillment.v2.model.CarouselBrowseItem;
+import com.google.api.services.actions_fulfillment.v2.model.CarouselSelectCarouselItem;
+import com.google.api.services.actions_fulfillment.v2.model.Image;
+import com.google.api.services.actions_fulfillment.v2.model.ListSelectListItem;
+import com.google.api.services.actions_fulfillment.v2.model.MediaObject;
+import com.google.api.services.actions_fulfillment.v2.model.MediaResponse;
+import com.google.api.services.actions_fulfillment.v2.model.OpenUrlAction;
+import com.google.api.services.actions_fulfillment.v2.model.OptionInfo;
+import com.google.api.services.actions_fulfillment.v2.model.SimpleResponse;
+import com.google.api.services.actions_fulfillment.v2.model.TableCard;
+import com.google.api.services.actions_fulfillment.v2.model.TableCardCell;
+import com.google.api.services.actions_fulfillment.v2.model.TableCardColumnProperties;
+import com.google.api.services.actions_fulfillment.v2.model.TableCardRow;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 
 public class ConversationComponentsApp extends DialogflowApp {
 
   private static final String IMG_URL_AOG =
-          "https://developers.google.com/actions/images/badges" +
-                  "/XPM_BADGING_GoogleAssistant_VER.png";
+      "https://developers.google.com/actions/images/badges" +
+          "/XPM_BADGING_GoogleAssistant_VER.png";
   private static final String IMG_URL_GOOGLE_HOME =
-          "https://lh3.googleusercontent.com/Nu3a6F80WfixUqf_ec_vgXy_" +
-                  "c0-0r4VLJRXjVFF_X_CIilEu8B9fT35qyTEj_PEsKw";
+      "https://lh3.googleusercontent.com/Nu3a6F80WfixUqf_ec_vgXy_" +
+          "c0-0r4VLJRXjVFF_X_CIilEu8B9fT35qyTEj_PEsKw";
   private static final String IMG_URL_GOOGLE_PIXEL =
-          "https://storage.googleapis.com/madebygoog/v1" +
-                  "/Pixel/Pixel_ColorPicker/Pixel_Device_Angled_Black-720w.png";
+      "https://storage.googleapis.com/madebygoog/v1" +
+          "/Pixel/Pixel_ColorPicker/Pixel_Device_Angled_Black-720w.png";
   private static final String IMG_URL_MEDIA =
-          "http://storage.googleapis.com/automotive-media/album_art.jpg";
+      "http://storage.googleapis.com/automotive-media/album_art.jpg";
   private static final String MEDIA_SOURCE =
-          "http://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3";
+      "http://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3";
 
   private static final String[] IMAGES = new String[]{
-          IMG_URL_AOG, IMG_URL_GOOGLE_HOME, IMG_URL_GOOGLE_PIXEL};
+      IMG_URL_AOG, IMG_URL_GOOGLE_HOME, IMG_URL_GOOGLE_PIXEL};
 
   private static final String[] SUGGESTIONS = new String[]{
-          "Basic Card",
-          "Browse Carousel",
-          "Carousel",
-          "List",
-          "Media",
-          "Table Card"};
+      "Basic Card",
+      "Browse Carousel",
+      "Carousel",
+      "List",
+      "Media",
+      "Table Card"};
 
   @ForIntent("Default Welcome Intent")
   public CompletableFuture<ActionResponse> welcome(ActionRequest request) {
     ResponseBuilder responseBuilder = getResponseBuilder();
+    ResourceBundle rb = ResourceBundle.getBundle("resources",
+        request.getLocale());
     responseBuilder
-            .add(new SimpleResponse()
-                    .setDisplayText("Hello there")
-                    .setTextToSpeech("Hi there!"))
-            .add(new SimpleResponse()
-                    .setTextToSpeech("I can show you basic cards, lists and " +
-                            " carousels as well as suggestions on your phone.")
-                    .setDisplayText("I can show you basic cards, lists and " +
-                            " carousels as well as suggestions"))
-            .addSuggestions(SUGGESTIONS);
+        .add(new SimpleResponse()
+            .setDisplayText(rb.getString("welcome_msg_1"))
+            .setTextToSpeech(rb.getString("welcome_msg_2")))
+        .add(new SimpleResponse()
+            .setTextToSpeech(rb.getString("welcome_more_1"))
+            .setDisplayText(rb.getString("welcome_more_2")))
+        .addSuggestions(SUGGESTIONS);
 
     return CompletableFuture.completedFuture(responseBuilder.build());
   }
@@ -74,118 +93,125 @@ public class ConversationComponentsApp extends DialogflowApp {
   @ForIntent("normal ask")
   public CompletableFuture<ActionResponse> normalAsk(ActionRequest request) {
     ResponseBuilder responseBuilder = getResponseBuilder();
+    ResourceBundle rb = ResourceBundle.getBundle("resources",
+        request.getLocale());
     ActionResponse response = responseBuilder
-            .add("Ask me to show you a list, carousel, or basic card.")
-            .build();
+        .add(rb.getString("normal_ask_text"))
+        .build();
     return CompletableFuture.completedFuture(response);
   }
 
   @ForIntent("basic card")
   public CompletableFuture<ActionResponse> basicCard(ActionRequest request) {
     ResponseBuilder responseBuilder = getResponseBuilder();
+    ResourceBundle rb = ResourceBundle.getBundle("resources",
+        request.getLocale());
     if (!request.hasCapability(Capability.SCREEN_OUTPUT.getValue())) {
       return CompletableFuture.completedFuture(
-              responseBuilder.add("Sorry, try this on a device with a screen" +
-                      " select the phone surface in the simulator").build());
+          responseBuilder
+              .add(rb.getString("msg_no_screen"))
+              .build());
     }
 
     Button learnMoreButton = new Button()
-            .setTitle("This is a button")
-            .setOpenUrlAction(new OpenUrlAction()
-                    .setUrl("https://assistant.google.com"));
+        .setTitle(rb.getString("basic_card_button_text"))
+        .setOpenUrlAction(new OpenUrlAction()
+            .setUrl("https://assistant.google.com"));
     List<Button> buttons = new ArrayList<>();
     buttons.add(learnMoreButton);
-    String text = "This is a basic card. Text in a basic card can include" +
-            " \"quotes\", *emphasis*, _italics_, **strong**, __bold__ and " +
-            " ***bold italic*** or ___strong emphasis___ as well as other " +
-            " things like line  \nbreaks";
+    String text = rb.getString("basic_card_text");
     responseBuilder
-            .add("This is the first simple response for a basic card.")
-            .add(new BasicCard()
-                    .setTitle("Title: This is a title")
-                    .setSubtitle("This is a subtitle")
-                    .setFormattedText(text)
-                    .setImage(new Image()
-                            .setUrl(IMG_URL_AOG)
-                            .setAccessibilityText("Image alt text"))
-                    .setButtons(buttons))
-            .addSuggestions(SUGGESTIONS);
+        .add(rb.getString("basic_card_response"))
+        .add(new BasicCard()
+            .setTitle(rb.getString("basic_card_title"))
+            .setSubtitle(rb.getString("basic_card_sub_title"))
+            .setFormattedText(text)
+            .setImage(new Image()
+                .setUrl(IMG_URL_AOG)
+                .setAccessibilityText(
+                    rb.getString("basic_card_alt_text")))
+            .setButtons(buttons))
+        .addSuggestions(SUGGESTIONS);
 
     return CompletableFuture.completedFuture(responseBuilder.build());
   }
 
   @ForIntent("list")
   public CompletableFuture<ActionResponse> selectionList(
-          ActionRequest request) {
+      ActionRequest request) {
     ResponseBuilder responseBuilder = getResponseBuilder();
+    ResourceBundle rb = ResourceBundle.getBundle("resources",
+        request.getLocale());
     if (!request.hasCapability(Capability.SCREEN_OUTPUT.getValue())) {
       return CompletableFuture.completedFuture(
-              responseBuilder.add("Sorry, try this on a device with a screen" +
-                      " select the phone surface in the simulator").build());
+          responseBuilder.add(rb.getString("msg_no_screen")).build());
     }
 
     List<ListSelectListItem> items = new ArrayList<>();
     ListSelectListItem item;
     for (int i = 0; i < 3; i++) {
       item = new ListSelectListItem();
-      item.setTitle("Item #" + (i + 1))
-              .setDescription("Description of Item #" + (i + 1))
-              .setImage(new Image()
-                      .setUrl(IMAGES[i])
-                      .setAccessibilityText("Image alt text"))
-              .setOptionInfo(new OptionInfo()
-                      .setKey(String.valueOf(i + 1)));
+      item.setTitle(getMsg(rb, "list_item_title", i + 1))
+          .setDescription(getMsg(rb, "list_item_desc", i + 1))
+          .setImage(new Image()
+              .setUrl(IMAGES[i])
+              .setAccessibilityText(
+                  rb.getString("list_image_alt_text")))
+          .setOptionInfo(new OptionInfo()
+              .setKey(String.valueOf(i + 1)));
       items.add(item);
     }
 
     responseBuilder
-            .add("This is the first simple response for a list.")
-            .add(new SelectionList().setTitle("List title").setItems(items))
-            .addSuggestions(SUGGESTIONS);
+        .add(rb.getString("list_response_title"))
+        .add(new SelectionList().setTitle("List title").setItems(items))
+        .addSuggestions(SUGGESTIONS);
 
     return CompletableFuture.completedFuture(responseBuilder.build());
   }
 
   @ForIntent("carousel")
   public CompletableFuture<ActionResponse> selectionCaorusel(
-          ActionRequest request) {
+      ActionRequest request) {
     ResponseBuilder responseBuilder = getResponseBuilder();
+    ResourceBundle rb = ResourceBundle.getBundle("resources",
+        request.getLocale());
     if (!request.hasCapability(Capability.SCREEN_OUTPUT.getValue())) {
       return CompletableFuture.completedFuture(
-              responseBuilder.add("Sorry, try this on a device with a screen" +
-                      " select the phone surface in the simulator").build());
+          responseBuilder.add(rb.getString("msg_no_screen")).build());
     }
 
     List<CarouselSelectCarouselItem> items = new ArrayList<>();
     CarouselSelectCarouselItem item;
     for (int i = 0; i < 3; i++) {
       item = new CarouselSelectCarouselItem();
-      item.setTitle("Item #" + (i + 1))
-              .setDescription("Description of Item #" + (i + 1))
-              .setImage(new Image()
-                      .setUrl(IMAGES[i])
-                      .setAccessibilityText("Image alt text"))
-              .setOptionInfo(new OptionInfo()
-                      .setKey(String.valueOf(i + 1)));
+      item.setTitle(getMsg(rb, "list_item_title", i + 1))
+          .setDescription(getMsg(rb, "list_item_desc", i + 1))
+          .setImage(new Image()
+              .setUrl(IMAGES[i])
+              .setAccessibilityText(rb.getString("list_image_alt_text")))
+          .setOptionInfo(new OptionInfo()
+              .setKey(String.valueOf(i + 1)));
       items.add(item);
     }
 
     responseBuilder
-            .add("This is the first simple response for a selection carousel.")
-            .addSuggestions(SUGGESTIONS)
-            .add(new SelectionCarousel().setItems(items));
+        .add(rb.getString("selection_carousel_response_title"))
+        .addSuggestions(SUGGESTIONS)
+        .add(new SelectionCarousel().setItems(items));
 
     return CompletableFuture.completedFuture(responseBuilder.build());
   }
 
   @ForIntent("browse carousel")
   public CompletableFuture<ActionResponse> browseCarousel(
-          ActionRequest request) {
+      ActionRequest request) {
     ResponseBuilder responseBuilder = getResponseBuilder();
+    ResourceBundle rb = ResourceBundle.getBundle("resources",
+        request.getLocale());
     if (!request.hasCapability(Capability.SCREEN_OUTPUT.getValue())) {
       return CompletableFuture.completedFuture(
-              responseBuilder.add("Sorry, try this on a device with a screen" +
-                      " select the phone surface in the simulator").build());
+          responseBuilder.add(rb.getString("msg_no_screen")).build());
     }
 
     String url = "https://www.google.com";
@@ -194,134 +220,149 @@ public class ConversationComponentsApp extends DialogflowApp {
     CarouselBrowseItem item;
     for (int i = 0; i < 3; i++) {
       item = new CarouselBrowseItem();
-      item.setTitle("Item #" + (i + 1));
-      item.setDescription("Description of Item #" + (i + 1));
+      item.setTitle(getMsg(rb, "list_item_title", i + 1));
+      item.setDescription(getMsg(rb, "list_item_desc", i + 1));
       item.setOpenUrlAction(new OpenUrlAction().setUrl(url));
       item.setImage(new Image().setUrl(IMAGES[i])
-              .setAccessibilityText("Image alt text"));
-      item.setFooter("Footer for Item #" + (i + 1));
+          .setAccessibilityText(rb.getString("list_image_alt_text")));
+      item.setFooter(getMsg(rb, "list_item_footer", i + 1));
       items.add(item);
     }
 
     responseBuilder
-            .add("This is an example of a browse carousel.")
-            .addSuggestions(SUGGESTIONS)
-            .add(new CarouselBrowse().setItems(items));
+        .add(rb.getString("browse_carousel_response"))
+        .addSuggestions(SUGGESTIONS)
+        .add(new CarouselBrowse().setItems(items));
 
     return CompletableFuture.completedFuture(responseBuilder.build());
   }
 
   @ForIntent("item selected")
   public CompletableFuture<ActionResponse> itemSelected(
-          ActionRequest request) {
+      ActionRequest request) {
     ResponseBuilder responseBuilder = getResponseBuilder();
-    String selectedItem = request.getArgument("OPTION").getTextValue();
+    ResourceBundle rb = ResourceBundle.getBundle("resources",
+        request.getLocale());
+    String selectedItem = request.getSelectedOption();
     responseBuilder
-            .add("You selected: " + selectedItem)
-            .addSuggestions(SUGGESTIONS);
+        .add(getMsg(rb, "item_selected", selectedItem))
+        .addSuggestions(SUGGESTIONS);
     return CompletableFuture.completedFuture(responseBuilder.build());
   }
 
   @ForIntent("media response")
   public CompletableFuture<ActionResponse> mediaResponse(
-          ActionRequest request) {
+      ActionRequest request) {
     ResponseBuilder responseBuilder = getResponseBuilder();
+    ResourceBundle rb = ResourceBundle.getBundle("resources",
+        request.getLocale());
     if (!request.hasCapability(Capability.MEDIA_RESPONSE_AUDIO.getValue())) {
       return CompletableFuture.completedFuture(
-              responseBuilder.add("Sorry, this device does not support " +
-                      "audio playback").build());
+          responseBuilder.add(rb.getString("msg_no_screen")).build());
     }
 
     List<MediaObject> mediaObjects = new ArrayList<>();
     mediaObjects.add(new MediaObject()
-            .setName("Jazz in Paris")
-            .setDescription("A funky Jazz tune")
-            .setContentUrl(MEDIA_SOURCE)
-            .setIcon(new Image()
-                    .setUrl(IMG_URL_MEDIA)
-                    .setAccessibilityText("Media icon")));
+        .setName(rb.getString("media_name"))
+        .setDescription(rb.getString("media_desc"))
+        .setContentUrl(MEDIA_SOURCE)
+        .setIcon(new Image()
+            .setUrl(IMG_URL_MEDIA)
+            .setAccessibilityText(rb.getString("media_image_alt_text"))));
     responseBuilder
-            .add("This is the sample for a media response")
-            .addSuggestions(SUGGESTIONS)
-            .add(new MediaResponse()
-                    .setMediaObjects(mediaObjects)
-                    .setMediaType("AUDIO"));
+        .add(rb.getString("media_response"))
+        .addSuggestions(SUGGESTIONS)
+        .add(new MediaResponse()
+            .setMediaObjects(mediaObjects)
+            .setMediaType("AUDIO"));
     return CompletableFuture.completedFuture(responseBuilder.build());
   }
 
   @ForIntent("media status")
   public CompletableFuture<ActionResponse> handleMediaStatusEvent(
-          ActionRequest request) {
+      ActionRequest request) {
     ResponseBuilder responseBuilder = getResponseBuilder();
-    Argument mediaStatus = request.getArgument("MEDIA_STATUS");
-    String status = "Unknown";
-    if (mediaStatus != null && mediaStatus.getExtension() != null) {
-      status = (String) mediaStatus.getExtension().get("status");
+    ResourceBundle rb = ResourceBundle.getBundle("resources",
+        request.getLocale());
+    String status = request.getMediaStatus();
+    if (status == null) {
+      status = "Unknown";
     }
     responseBuilder
-            .add("Media status received - " + status)
-            .addSuggestions(SUGGESTIONS);
+        .add(getMsg(rb, "media_status_received", status))
+        .addSuggestions(SUGGESTIONS);
 
     return CompletableFuture.completedFuture(responseBuilder.build());
   }
 
   @ForIntent("table builder")
   public CompletableFuture<ActionResponse> tableCard(
-          ActionRequest request) {
+      ActionRequest request) {
     ResponseBuilder responseBuilder = getResponseBuilder();
+    ResourceBundle rb = ResourceBundle.getBundle("resources",
+        request.getLocale());
     if (!request.hasCapability(Capability.SCREEN_OUTPUT.getValue())) {
       return CompletableFuture.completedFuture(
-              responseBuilder.add("Sorry, try this on a device with a screen" +
-                      " select the phone surface in the simulator").build());
+          responseBuilder.add(rb.getString("msg_no_screen")).build());
     }
 
     List<TableCardColumnProperties> columnProperties = new ArrayList<>();
     columnProperties.add(new TableCardColumnProperties()
-            .setHeader("Column #1"));
+        .setHeader(rb.getString("table_col_1")));
     columnProperties.add(new TableCardColumnProperties()
-            .setHeader("Column #2"));
+        .setHeader(rb.getString("table_col_2")));
     columnProperties.add(new TableCardColumnProperties()
-            .setHeader("Column #3"));
+        .setHeader(rb.getString("table_col_3")));
 
     List<TableCardRow> rows = new ArrayList<>();
     for (int i = 0; i < 4; i++) {
       List<TableCardCell> cells = new ArrayList<>();
       for (int j = 0; j < 3; j++) {
-        cells.add(new TableCardCell().setText("Cell #" + (j + 1)));
+        cells.add(
+            new TableCardCell()
+                .setText(getMsg(rb, "table_cell_value", (i + 1))));
       }
       rows.add(new TableCardRow().setCells(cells));
     }
 
     TableCard table = new TableCard()
-            .setTitle("Table card title")
-            .setSubtitle("Table card subtitle")
-            .setColumnProperties(columnProperties)
-            .setRows(rows);
+        .setTitle(rb.getString("table_title"))
+        .setSubtitle(rb.getString("table_subtitle"))
+        .setColumnProperties(columnProperties)
+        .setRows(rows);
 
     responseBuilder
-            .add("This is an example of Table card")
-            .add(table)
-            .addSuggestions(SUGGESTIONS);
+        .add(rb.getString("table_response"))
+        .add(table)
+        .addSuggestions(SUGGESTIONS);
     return CompletableFuture.completedFuture(responseBuilder.build());
   }
 
   @ForIntent("normal bye")
   public CompletableFuture<ActionResponse> normalBye(ActionRequest request) {
     ResponseBuilder responseBuilder = getResponseBuilder();
+    ResourceBundle rb = ResourceBundle.getBundle("resources",
+        request.getLocale());
     responseBuilder
-            .add("Ok see you later.")
-            .endConversation();
+        .add(rb.getString("bye_display_text"))
+        .endConversation();
     return CompletableFuture.completedFuture(responseBuilder.build());
   }
 
   @ForIntent("bye response")
   public CompletableFuture<ActionResponse> byeResponse(ActionRequest request) {
     ResponseBuilder responseBuilder = getResponseBuilder();
+    ResourceBundle rb = ResourceBundle.getBundle("resources",
+        request.getLocale());
     responseBuilder
-            .add(new SimpleResponse()
-                    .setDisplayText("OK see you later")
-                    .setTextToSpeech("Okay see you later"))
-            .endConversation();
+        .add(new SimpleResponse()
+            .setDisplayText(rb.getString("bye_display_text"))
+            .setTextToSpeech(rb.getString("bye_tts")))
+        .endConversation();
     return CompletableFuture.completedFuture(responseBuilder.build());
+  }
+
+  private String getMsg(ResourceBundle rb, String key, Object... args) {
+    return MessageFormat.format(rb.getString(key), args);
   }
 }

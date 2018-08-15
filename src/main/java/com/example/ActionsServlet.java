@@ -17,31 +17,30 @@
 package com.example;
 
 import com.google.actions.api.App;
-
+import java.io.IOException;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @WebServlet(name = "actions", value = "/")
 public class ActionsServlet extends HttpServlet {
 
-  private App actionsApp = new ConversationComponentsApp();
+  private final App actionsApp = new ConversationComponentsApp();
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse res)
-          throws IOException {
+      throws IOException {
     String body = req.getReader().lines().collect(Collectors.joining());
 
     actionsApp.handleRequest(body, null)
-            .thenAccept((Consumer<String>) jsonResponse -> {
-              System.out.println("Generated json = " + jsonResponse);
-              res.setContentType("application/json");
-              writeResponse(res, jsonResponse);
-            }).exceptionally((throwable -> {
+        .thenAccept((Consumer<String>) jsonResponse -> {
+          System.out.println("Generated json = " + jsonResponse);
+          res.setContentType("application/json");
+          writeResponse(res, jsonResponse);
+        }).exceptionally((throwable -> {
       writeResponse(res, "Error handling the intent - " + throwable);
       return null;
     }));
