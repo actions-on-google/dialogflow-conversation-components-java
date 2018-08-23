@@ -48,6 +48,12 @@ import java.util.concurrent.CompletableFuture;
 
 public class ConversationComponentsApp extends DialogflowApp {
 
+  // Note: Do not store any state as an instance variable.
+  // It is ok to have final variables where the variable is assigned a value in
+  // the constructor but remains unchanged. This is required to ensure thread-
+  // safety as the entry point (ActionServlet/ActionsAWSHandler) instances may
+  // be reused by the server.
+
   private static final String IMG_URL_AOG =
       "https://developers.google.com/actions/images/badges" +
           "/XPM_BADGING_GoogleAssistant_VER.png";
@@ -258,7 +264,7 @@ public class ConversationComponentsApp extends DialogflowApp {
         request.getLocale());
     if (!request.hasCapability(Capability.MEDIA_RESPONSE_AUDIO.getValue())) {
       return CompletableFuture.completedFuture(
-          responseBuilder.add(rb.getString("msg_no_screen")).build());
+          responseBuilder.add(rb.getString("msg_no_media")).build());
     }
 
     List<MediaObject> mediaObjects = new ArrayList<>();
