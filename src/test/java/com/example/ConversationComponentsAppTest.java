@@ -86,7 +86,7 @@ public class ConversationComponentsAppTest {
     assertEquals(2, richResponse.getItems().size());
     assertNotNull(richResponse.getItems().get(1).getBasicCard());
     assertNotNull(richResponse.getItems().get(1).getBasicCard().getImage());
-    assertNull(response.getSystemIntent());
+    assertNull(response.getHelperIntent());
     assertNotNull(response.getRichResponse().getSuggestions());
   }
 
@@ -107,7 +107,7 @@ public class ConversationComponentsAppTest {
     assertNotNull(
         richResponse.getItems().get(1).getMediaResponse()
             .getMediaObjects().get(0).getIcon());
-    assertNull(response.getSystemIntent());
+    assertNull(response.getHelperIntent());
     assertNotNull(response.getRichResponse().getSuggestions());
   }
 
