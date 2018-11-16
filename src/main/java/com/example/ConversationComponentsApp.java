@@ -16,35 +16,17 @@
 
 package com.example;
 
-import com.google.actions.api.ActionRequest;
-import com.google.actions.api.ActionResponse;
+import com.google.actions.api.*;
 import com.google.actions.api.Capability;
-import com.google.actions.api.DialogflowApp;
-import com.google.actions.api.ForIntent;
 import com.google.actions.api.response.ResponseBuilder;
 import com.google.actions.api.response.helperintent.SelectionCarousel;
 import com.google.actions.api.response.helperintent.SelectionList;
-import com.google.api.services.actions_fulfillment.v2.model.BasicCard;
-import com.google.api.services.actions_fulfillment.v2.model.Button;
-import com.google.api.services.actions_fulfillment.v2.model.CarouselBrowse;
-import com.google.api.services.actions_fulfillment.v2.model.CarouselBrowseItem;
-import com.google.api.services.actions_fulfillment.v2.model.CarouselSelectCarouselItem;
-import com.google.api.services.actions_fulfillment.v2.model.Image;
-import com.google.api.services.actions_fulfillment.v2.model.ListSelectListItem;
-import com.google.api.services.actions_fulfillment.v2.model.MediaObject;
-import com.google.api.services.actions_fulfillment.v2.model.MediaResponse;
-import com.google.api.services.actions_fulfillment.v2.model.OpenUrlAction;
-import com.google.api.services.actions_fulfillment.v2.model.OptionInfo;
-import com.google.api.services.actions_fulfillment.v2.model.SimpleResponse;
-import com.google.api.services.actions_fulfillment.v2.model.TableCard;
-import com.google.api.services.actions_fulfillment.v2.model.TableCardCell;
-import com.google.api.services.actions_fulfillment.v2.model.TableCardColumnProperties;
-import com.google.api.services.actions_fulfillment.v2.model.TableCardRow;
+import com.google.api.services.actions_fulfillment.v2.model.*;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
 
 public class ConversationComponentsApp extends DialogflowApp {
 
@@ -55,102 +37,88 @@ public class ConversationComponentsApp extends DialogflowApp {
   // be reused by the server.
 
   private static final String IMG_URL_AOG =
-      "https://developers.google.com/actions/images/badges" +
-          "/XPM_BADGING_GoogleAssistant_VER.png";
+          "https://developers.google.com/actions/images/badges"
+                  + "/XPM_BADGING_GoogleAssistant_VER.png";
   private static final String IMG_URL_GOOGLE_HOME =
-      "https://lh3.googleusercontent.com/Nu3a6F80WfixUqf_ec_vgXy_" +
-          "c0-0r4VLJRXjVFF_X_CIilEu8B9fT35qyTEj_PEsKw";
+          "https://lh3.googleusercontent.com/Nu3a6F80WfixUqf_ec_vgXy_"
+                  + "c0-0r4VLJRXjVFF_X_CIilEu8B9fT35qyTEj_PEsKw";
   private static final String IMG_URL_GOOGLE_PIXEL =
-      "https://storage.googleapis.com/madebygoog/v1" +
-          "/Pixel/Pixel_ColorPicker/Pixel_Device_Angled_Black-720w.png";
+          "https://storage.googleapis.com/madebygoog/v1"
+                  + "/Pixel/Pixel_ColorPicker/Pixel_Device_Angled_Black-720w.png";
   private static final String IMG_URL_MEDIA =
       "http://storage.googleapis.com/automotive-media/album_art.jpg";
   private static final String MEDIA_SOURCE =
       "http://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3";
 
-  private static final String[] IMAGES = new String[]{
-      IMG_URL_AOG, IMG_URL_GOOGLE_HOME, IMG_URL_GOOGLE_PIXEL};
+  private static final String[] IMAGES =
+          new String[]{IMG_URL_AOG, IMG_URL_GOOGLE_HOME, IMG_URL_GOOGLE_PIXEL};
 
-  private static final String[] SUGGESTIONS = new String[]{
-      "Basic Card",
-      "Browse Carousel",
-      "Carousel",
-      "List",
-      "Media",
-      "Table Card"};
+  private static final String[] SUGGESTIONS =
+          new String[]{"Basic Card", "Browse Carousel", "Carousel", "List", "Media", "Table Card"};
 
   @ForIntent("Default Welcome Intent")
-  public CompletableFuture<ActionResponse> welcome(ActionRequest request) {
-    ResponseBuilder responseBuilder = getResponseBuilder();
-    ResourceBundle rb = ResourceBundle.getBundle("resources",
-        request.getLocale());
+  public ActionResponse welcome(ActionRequest request) {
+    ResponseBuilder responseBuilder = getResponseBuilder(request);
+    ResourceBundle rb = ResourceBundle.getBundle("resources", request.getLocale());
     responseBuilder
-        .add(new SimpleResponse()
-            .setDisplayText(rb.getString("welcome_msg_1"))
-            .setTextToSpeech(rb.getString("welcome_msg_2")))
-        .add(new SimpleResponse()
-            .setTextToSpeech(rb.getString("welcome_more_1"))
-            .setDisplayText(rb.getString("welcome_more_2")))
+            .add(
+                    new SimpleResponse()
+                            .setDisplayText(rb.getString("welcome_msg_1"))
+                            .setTextToSpeech(rb.getString("welcome_msg_2")))
+            .add(
+                    new SimpleResponse()
+                            .setTextToSpeech(rb.getString("welcome_more_1"))
+                            .setDisplayText(rb.getString("welcome_more_2")))
         .addSuggestions(SUGGESTIONS);
 
-    return CompletableFuture.completedFuture(responseBuilder.build());
+    return responseBuilder.build();
   }
 
   @ForIntent("normal ask")
-  public CompletableFuture<ActionResponse> normalAsk(ActionRequest request) {
-    ResponseBuilder responseBuilder = getResponseBuilder();
-    ResourceBundle rb = ResourceBundle.getBundle("resources",
-        request.getLocale());
-    ActionResponse response = responseBuilder
-        .add(rb.getString("normal_ask_text"))
-        .build();
-    return CompletableFuture.completedFuture(response);
+  public ActionResponse normalAsk(ActionRequest request) {
+    ResponseBuilder responseBuilder = getResponseBuilder(request);
+    ResourceBundle rb = ResourceBundle.getBundle("resources", request.getLocale());
+    return responseBuilder.add(rb.getString("normal_ask_text")).build();
   }
 
   @ForIntent("basic card")
-  public CompletableFuture<ActionResponse> basicCard(ActionRequest request) {
-    ResponseBuilder responseBuilder = getResponseBuilder();
-    ResourceBundle rb = ResourceBundle.getBundle("resources",
-        request.getLocale());
+  public ActionResponse basicCard(ActionRequest request) {
+    ResponseBuilder responseBuilder = getResponseBuilder(request);
+    ResourceBundle rb = ResourceBundle.getBundle("resources", request.getLocale());
     if (!request.hasCapability(Capability.SCREEN_OUTPUT.getValue())) {
-      return CompletableFuture.completedFuture(
-          responseBuilder
-              .add(rb.getString("msg_no_screen"))
-              .build());
+      return responseBuilder.add(rb.getString("msg_no_screen")).build();
     }
 
-    Button learnMoreButton = new Button()
-        .setTitle(rb.getString("basic_card_button_text"))
-        .setOpenUrlAction(new OpenUrlAction()
-            .setUrl("https://assistant.google.com"));
+    Button learnMoreButton =
+            new Button()
+                    .setTitle(rb.getString("basic_card_button_text"))
+                    .setOpenUrlAction(new OpenUrlAction().setUrl("https://assistant.google.com"));
     List<Button> buttons = new ArrayList<>();
     buttons.add(learnMoreButton);
     String text = rb.getString("basic_card_text");
     responseBuilder
         .add(rb.getString("basic_card_response"))
-        .add(new BasicCard()
-            .setTitle(rb.getString("basic_card_title"))
-            .setSubtitle(rb.getString("basic_card_sub_title"))
-            .setFormattedText(text)
-            .setImage(new Image()
-                .setUrl(IMG_URL_AOG)
-                .setAccessibilityText(
-                    rb.getString("basic_card_alt_text")))
-            .setButtons(buttons))
+            .add(
+                    new BasicCard()
+                            .setTitle(rb.getString("basic_card_title"))
+                            .setSubtitle(rb.getString("basic_card_sub_title"))
+                            .setFormattedText(text)
+                            .setImage(
+                                    new Image()
+                                            .setUrl(IMG_URL_AOG)
+                                            .setAccessibilityText(rb.getString("basic_card_alt_text")))
+                            .setButtons(buttons))
         .addSuggestions(SUGGESTIONS);
 
-    return CompletableFuture.completedFuture(responseBuilder.build());
+    return responseBuilder.build();
   }
 
   @ForIntent("list")
-  public CompletableFuture<ActionResponse> selectionList(
-      ActionRequest request) {
-    ResponseBuilder responseBuilder = getResponseBuilder();
-    ResourceBundle rb = ResourceBundle.getBundle("resources",
-        request.getLocale());
+  public ActionResponse selectionList(ActionRequest request) {
+    ResponseBuilder responseBuilder = getResponseBuilder(request);
+    ResourceBundle rb = ResourceBundle.getBundle("resources", request.getLocale());
     if (!request.hasCapability(Capability.SCREEN_OUTPUT.getValue())) {
-      return CompletableFuture.completedFuture(
-          responseBuilder.add(rb.getString("msg_no_screen")).build());
+      return responseBuilder.add(rb.getString("msg_no_screen")).build();
     }
 
     List<ListSelectListItem> items = new ArrayList<>();
@@ -159,12 +127,11 @@ public class ConversationComponentsApp extends DialogflowApp {
       item = new ListSelectListItem();
       item.setTitle(getMsg(rb, "list_item_title", i + 1))
           .setDescription(getMsg(rb, "list_item_desc", i + 1))
-          .setImage(new Image()
-              .setUrl(IMAGES[i])
-              .setAccessibilityText(
-                  rb.getString("list_image_alt_text")))
-          .setOptionInfo(new OptionInfo()
-              .setKey(String.valueOf(i + 1)));
+              .setImage(
+                      new Image()
+                              .setUrl(IMAGES[i])
+                              .setAccessibilityText(rb.getString("list_image_alt_text")))
+              .setOptionInfo(new OptionInfo().setKey(String.valueOf(i + 1)));
       items.add(item);
     }
 
@@ -173,18 +140,15 @@ public class ConversationComponentsApp extends DialogflowApp {
         .add(new SelectionList().setTitle("List title").setItems(items))
         .addSuggestions(SUGGESTIONS);
 
-    return CompletableFuture.completedFuture(responseBuilder.build());
+    return responseBuilder.build();
   }
 
   @ForIntent("carousel")
-  public CompletableFuture<ActionResponse> selectionCaorusel(
-      ActionRequest request) {
-    ResponseBuilder responseBuilder = getResponseBuilder();
-    ResourceBundle rb = ResourceBundle.getBundle("resources",
-        request.getLocale());
+  public ActionResponse selectionCaorusel(ActionRequest request) {
+    ResponseBuilder responseBuilder = getResponseBuilder(request);
+    ResourceBundle rb = ResourceBundle.getBundle("resources", request.getLocale());
     if (!request.hasCapability(Capability.SCREEN_OUTPUT.getValue())) {
-      return CompletableFuture.completedFuture(
-          responseBuilder.add(rb.getString("msg_no_screen")).build());
+      return responseBuilder.add(rb.getString("msg_no_screen")).build();
     }
 
     List<CarouselSelectCarouselItem> items = new ArrayList<>();
@@ -193,11 +157,11 @@ public class ConversationComponentsApp extends DialogflowApp {
       item = new CarouselSelectCarouselItem();
       item.setTitle(getMsg(rb, "list_item_title", i + 1))
           .setDescription(getMsg(rb, "list_item_desc", i + 1))
-          .setImage(new Image()
-              .setUrl(IMAGES[i])
-              .setAccessibilityText(rb.getString("list_image_alt_text")))
-          .setOptionInfo(new OptionInfo()
-              .setKey(String.valueOf(i + 1)));
+              .setImage(
+                      new Image()
+                              .setUrl(IMAGES[i])
+                              .setAccessibilityText(rb.getString("list_image_alt_text")))
+              .setOptionInfo(new OptionInfo().setKey(String.valueOf(i + 1)));
       items.add(item);
     }
 
@@ -206,18 +170,15 @@ public class ConversationComponentsApp extends DialogflowApp {
         .addSuggestions(SUGGESTIONS)
         .add(new SelectionCarousel().setItems(items));
 
-    return CompletableFuture.completedFuture(responseBuilder.build());
+    return responseBuilder.build();
   }
 
   @ForIntent("browse carousel")
-  public CompletableFuture<ActionResponse> browseCarousel(
-      ActionRequest request) {
-    ResponseBuilder responseBuilder = getResponseBuilder();
-    ResourceBundle rb = ResourceBundle.getBundle("resources",
-        request.getLocale());
+  public ActionResponse browseCarousel(ActionRequest request) {
+    ResponseBuilder responseBuilder = getResponseBuilder(request);
+    ResourceBundle rb = ResourceBundle.getBundle("resources", request.getLocale());
     if (!request.hasCapability(Capability.SCREEN_OUTPUT.getValue())) {
-      return CompletableFuture.completedFuture(
-          responseBuilder.add(rb.getString("msg_no_screen")).build());
+      return responseBuilder.add(rb.getString("msg_no_screen")).build();
     }
 
     String url = "https://www.google.com";
@@ -229,8 +190,8 @@ public class ConversationComponentsApp extends DialogflowApp {
       item.setTitle(getMsg(rb, "list_item_title", i + 1));
       item.setDescription(getMsg(rb, "list_item_desc", i + 1));
       item.setOpenUrlAction(new OpenUrlAction().setUrl(url));
-      item.setImage(new Image().setUrl(IMAGES[i])
-          .setAccessibilityText(rb.getString("list_image_alt_text")));
+      item.setImage(
+              new Image().setUrl(IMAGES[i]).setAccessibilityText(rb.getString("list_image_alt_text")));
       item.setFooter(getMsg(rb, "list_item_footer", i + 1));
       items.add(item);
     }
@@ -240,132 +201,108 @@ public class ConversationComponentsApp extends DialogflowApp {
         .addSuggestions(SUGGESTIONS)
         .add(new CarouselBrowse().setItems(items));
 
-    return CompletableFuture.completedFuture(responseBuilder.build());
+    return responseBuilder.build();
   }
 
   @ForIntent("item selected")
-  public CompletableFuture<ActionResponse> itemSelected(
-      ActionRequest request) {
-    ResponseBuilder responseBuilder = getResponseBuilder();
-    ResourceBundle rb = ResourceBundle.getBundle("resources",
-        request.getLocale());
+  public ActionResponse itemSelected(ActionRequest request) {
+    ResponseBuilder responseBuilder = getResponseBuilder(request);
+    ResourceBundle rb = ResourceBundle.getBundle("resources", request.getLocale());
     String selectedItem = request.getSelectedOption();
-    responseBuilder
-        .add(getMsg(rb, "item_selected", selectedItem))
-        .addSuggestions(SUGGESTIONS);
-    return CompletableFuture.completedFuture(responseBuilder.build());
+    responseBuilder.add(getMsg(rb, "item_selected", selectedItem)).addSuggestions(SUGGESTIONS);
+    return responseBuilder.build();
   }
 
   @ForIntent("media response")
-  public CompletableFuture<ActionResponse> mediaResponse(
-      ActionRequest request) {
-    ResponseBuilder responseBuilder = getResponseBuilder();
-    ResourceBundle rb = ResourceBundle.getBundle("resources",
-        request.getLocale());
+  public ActionResponse mediaResponse(ActionRequest request) {
+    ResponseBuilder responseBuilder = getResponseBuilder(request);
+    ResourceBundle rb = ResourceBundle.getBundle("resources", request.getLocale());
     if (!request.hasCapability(Capability.MEDIA_RESPONSE_AUDIO.getValue())) {
-      return CompletableFuture.completedFuture(
-          responseBuilder.add(rb.getString("msg_no_media")).build());
+      return responseBuilder.add(rb.getString("msg_no_media")).build();
     }
 
     List<MediaObject> mediaObjects = new ArrayList<>();
-    mediaObjects.add(new MediaObject()
-        .setName(rb.getString("media_name"))
-        .setDescription(rb.getString("media_desc"))
-        .setContentUrl(MEDIA_SOURCE)
-        .setIcon(new Image()
-            .setUrl(IMG_URL_MEDIA)
-            .setAccessibilityText(rb.getString("media_image_alt_text"))));
+    mediaObjects.add(
+            new MediaObject()
+                    .setName(rb.getString("media_name"))
+                    .setDescription(rb.getString("media_desc"))
+                    .setContentUrl(MEDIA_SOURCE)
+                    .setIcon(
+                            new Image()
+                                    .setUrl(IMG_URL_MEDIA)
+                                    .setAccessibilityText(rb.getString("media_image_alt_text"))));
     responseBuilder
         .add(rb.getString("media_response"))
         .addSuggestions(SUGGESTIONS)
-        .add(new MediaResponse()
-            .setMediaObjects(mediaObjects)
-            .setMediaType("AUDIO"));
-    return CompletableFuture.completedFuture(responseBuilder.build());
+            .add(new MediaResponse().setMediaObjects(mediaObjects).setMediaType("AUDIO"));
+    return responseBuilder.build();
   }
 
   @ForIntent("media status")
-  public CompletableFuture<ActionResponse> handleMediaStatusEvent(
-      ActionRequest request) {
-    ResponseBuilder responseBuilder = getResponseBuilder();
-    ResourceBundle rb = ResourceBundle.getBundle("resources",
-        request.getLocale());
+  public ActionResponse handleMediaStatusEvent(ActionRequest request) {
+    ResponseBuilder responseBuilder = getResponseBuilder(request);
+    ResourceBundle rb = ResourceBundle.getBundle("resources", request.getLocale());
     String status = request.getMediaStatus();
     if (status == null) {
       status = "Unknown";
     }
-    responseBuilder
-        .add(getMsg(rb, "media_status_received", status))
-        .addSuggestions(SUGGESTIONS);
+    responseBuilder.add(getMsg(rb, "media_status_received", status)).addSuggestions(SUGGESTIONS);
 
-    return CompletableFuture.completedFuture(responseBuilder.build());
+    return responseBuilder.build();
   }
 
   @ForIntent("table builder")
-  public CompletableFuture<ActionResponse> tableCard(
-      ActionRequest request) {
-    ResponseBuilder responseBuilder = getResponseBuilder();
-    ResourceBundle rb = ResourceBundle.getBundle("resources",
-        request.getLocale());
+  public ActionResponse tableCard(ActionRequest request) {
+    ResponseBuilder responseBuilder = getResponseBuilder(request);
+    ResourceBundle rb = ResourceBundle.getBundle("resources", request.getLocale());
     if (!request.hasCapability(Capability.SCREEN_OUTPUT.getValue())) {
-      return CompletableFuture.completedFuture(
-          responseBuilder.add(rb.getString("msg_no_screen")).build());
+      return responseBuilder.add(rb.getString("msg_no_screen")).build();
     }
 
     List<TableCardColumnProperties> columnProperties = new ArrayList<>();
-    columnProperties.add(new TableCardColumnProperties()
-        .setHeader(rb.getString("table_col_1")));
-    columnProperties.add(new TableCardColumnProperties()
-        .setHeader(rb.getString("table_col_2")));
-    columnProperties.add(new TableCardColumnProperties()
-        .setHeader(rb.getString("table_col_3")));
+    columnProperties.add(new TableCardColumnProperties().setHeader(rb.getString("table_col_1")));
+    columnProperties.add(new TableCardColumnProperties().setHeader(rb.getString("table_col_2")));
+    columnProperties.add(new TableCardColumnProperties().setHeader(rb.getString("table_col_3")));
 
     List<TableCardRow> rows = new ArrayList<>();
     for (int i = 0; i < 4; i++) {
       List<TableCardCell> cells = new ArrayList<>();
       for (int j = 0; j < 3; j++) {
-        cells.add(
-            new TableCardCell()
-                .setText(getMsg(rb, "table_cell_value", (i + 1))));
+        cells.add(new TableCardCell().setText(getMsg(rb, "table_cell_value", (i + 1))));
       }
       rows.add(new TableCardRow().setCells(cells));
     }
 
-    TableCard table = new TableCard()
-        .setTitle(rb.getString("table_title"))
-        .setSubtitle(rb.getString("table_subtitle"))
-        .setColumnProperties(columnProperties)
-        .setRows(rows);
+    TableCard table =
+            new TableCard()
+                    .setTitle(rb.getString("table_title"))
+                    .setSubtitle(rb.getString("table_subtitle"))
+                    .setColumnProperties(columnProperties)
+                    .setRows(rows);
 
-    responseBuilder
-        .add(rb.getString("table_response"))
-        .add(table)
-        .addSuggestions(SUGGESTIONS);
-    return CompletableFuture.completedFuture(responseBuilder.build());
+    responseBuilder.add(rb.getString("table_response")).add(table).addSuggestions(SUGGESTIONS);
+    return responseBuilder.build();
   }
 
   @ForIntent("normal bye")
-  public CompletableFuture<ActionResponse> normalBye(ActionRequest request) {
-    ResponseBuilder responseBuilder = getResponseBuilder();
-    ResourceBundle rb = ResourceBundle.getBundle("resources",
-        request.getLocale());
-    responseBuilder
-        .add(rb.getString("bye_display_text"))
-        .endConversation();
-    return CompletableFuture.completedFuture(responseBuilder.build());
+  public ActionResponse normalBye(ActionRequest request) {
+    ResponseBuilder responseBuilder = getResponseBuilder(request);
+    ResourceBundle rb = ResourceBundle.getBundle("resources", request.getLocale());
+    responseBuilder.add(rb.getString("bye_display_text")).endConversation();
+    return responseBuilder.build();
   }
 
   @ForIntent("bye response")
-  public CompletableFuture<ActionResponse> byeResponse(ActionRequest request) {
-    ResponseBuilder responseBuilder = getResponseBuilder();
-    ResourceBundle rb = ResourceBundle.getBundle("resources",
-        request.getLocale());
+  public ActionResponse byeResponse(ActionRequest request) {
+    ResponseBuilder responseBuilder = getResponseBuilder(request);
+    ResourceBundle rb = ResourceBundle.getBundle("resources", request.getLocale());
     responseBuilder
-        .add(new SimpleResponse()
-            .setDisplayText(rb.getString("bye_display_text"))
-            .setTextToSpeech(rb.getString("bye_tts")))
+            .add(
+                    new SimpleResponse()
+                            .setDisplayText(rb.getString("bye_display_text"))
+                            .setTextToSpeech(rb.getString("bye_tts")))
         .endConversation();
-    return CompletableFuture.completedFuture(responseBuilder.build());
+    return responseBuilder.build();
   }
 
   private String getMsg(ResourceBundle rb, String key, Object... args) {

@@ -20,20 +20,16 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.actions.api.App;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.*;
+
 /**
- * Handles request received via AWS - API Gateway proxy integration and
- * delegates to ConversationComponentsApp.
- * https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
+ * Handles request received via AWS - API Gateway [proxy
+ * integration](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html)
+ * and delegates to your Actions App.
  */
 public class ActionsAWSHandler implements RequestStreamHandler {
   // Replace this with your webhook.
@@ -41,11 +37,9 @@ public class ActionsAWSHandler implements RequestStreamHandler {
   private final JSONParser parser = new JSONParser();
 
   @Override
-  public void handleRequest(InputStream inputStream,
-                            OutputStream outputStream,
-                            Context context) throws IOException {
-    BufferedReader reader = new BufferedReader(
-            new InputStreamReader(inputStream));
+  public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context)
+          throws IOException {
+    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
     JSONObject awsResponse = new JSONObject();
     LambdaLogger logger = context.getLogger();
     try {
@@ -54,8 +48,10 @@ public class ActionsAWSHandler implements RequestStreamHandler {
       String body = (String) awsRequest.get("body");
       logger.log("AWS request body = " + body);
 
-      actionsApp.handleRequest(body, headers)
-              .thenAccept((webhookResponseJson) -> {
+      actionsApp
+              .handleRequest(body, headers)
+              .thenAccept(
+                      (webhookResponseJson) -> {
                 logger.log("Generated json = " + webhookResponseJson);
 
                 JSONObject responseHeaders = new JSONObject();
@@ -65,12 +61,14 @@ public class ActionsAWSHandler implements RequestStreamHandler {
                 awsResponse.put("headers", responseHeaders);
                 awsResponse.put("body", webhookResponseJson);
                 writeResponse(outputStream, awsResponse);
-              }).exceptionally((throwable -> {
-        awsResponse.put("statusCode", "500");
-        awsResponse.put("exception", throwable);
-        writeResponse(outputStream, awsResponse);
-        return null;
-      }));
+                      })
+              .exceptionally(
+                      (throwable -> {
+                        awsResponse.put("statusCode", "500");
+                        awsResponse.put("exception", throwable);
+                        writeResponse(outputStream, awsResponse);
+                        return null;
+                      }));
 
     } catch (ParseException e) {
       e.printStackTrace();
