@@ -16,13 +16,30 @@
 
 package com.example;
 
-import com.google.actions.api.*;
+import com.google.actions.api.ActionRequest;
+import com.google.actions.api.ActionResponse;
 import com.google.actions.api.Capability;
+import com.google.actions.api.DialogflowApp;
+import com.google.actions.api.ForIntent;
 import com.google.actions.api.response.ResponseBuilder;
 import com.google.actions.api.response.helperintent.SelectionCarousel;
 import com.google.actions.api.response.helperintent.SelectionList;
-import com.google.api.services.actions_fulfillment.v2.model.*;
-
+import com.google.api.services.actions_fulfillment.v2.model.BasicCard;
+import com.google.api.services.actions_fulfillment.v2.model.Button;
+import com.google.api.services.actions_fulfillment.v2.model.CarouselBrowse;
+import com.google.api.services.actions_fulfillment.v2.model.CarouselBrowseItem;
+import com.google.api.services.actions_fulfillment.v2.model.CarouselSelectCarouselItem;
+import com.google.api.services.actions_fulfillment.v2.model.Image;
+import com.google.api.services.actions_fulfillment.v2.model.ListSelectListItem;
+import com.google.api.services.actions_fulfillment.v2.model.MediaObject;
+import com.google.api.services.actions_fulfillment.v2.model.MediaResponse;
+import com.google.api.services.actions_fulfillment.v2.model.OpenUrlAction;
+import com.google.api.services.actions_fulfillment.v2.model.OptionInfo;
+import com.google.api.services.actions_fulfillment.v2.model.SimpleResponse;
+import com.google.api.services.actions_fulfillment.v2.model.TableCard;
+import com.google.api.services.actions_fulfillment.v2.model.TableCardCell;
+import com.google.api.services.actions_fulfillment.v2.model.TableCardColumnProperties;
+import com.google.api.services.actions_fulfillment.v2.model.TableCardRow;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,42 +50,42 @@ public class ConversationComponentsApp extends DialogflowApp {
   // Note: Do not store any state as an instance variable.
   // It is ok to have final variables where the variable is assigned a value in
   // the constructor but remains unchanged. This is required to ensure thread-
-  // safety as the entry point (ActionServlet/ActionsAWSHandler) instances may
+  // safety as the entry point (ActionServlet) instances may
   // be reused by the server.
 
   private static final String IMG_URL_AOG =
-          "https://developers.google.com/actions/images/badges"
-                  + "/XPM_BADGING_GoogleAssistant_VER.png";
+      "https://developers.google.com/actions/images/badges"
+          + "/XPM_BADGING_GoogleAssistant_VER.png";
   private static final String IMG_URL_GOOGLE_HOME =
-          "https://lh3.googleusercontent.com/Nu3a6F80WfixUqf_ec_vgXy_"
-                  + "c0-0r4VLJRXjVFF_X_CIilEu8B9fT35qyTEj_PEsKw";
+      "https://lh3.googleusercontent.com/Nu3a6F80WfixUqf_ec_vgXy_"
+          + "c0-0r4VLJRXjVFF_X_CIilEu8B9fT35qyTEj_PEsKw";
   private static final String IMG_URL_GOOGLE_PIXEL =
-          "https://storage.googleapis.com/madebygoog/v1"
-                  + "/Pixel/Pixel_ColorPicker/Pixel_Device_Angled_Black-720w.png";
+      "https://storage.googleapis.com/madebygoog/v1"
+          + "/Pixel/Pixel_ColorPicker/Pixel_Device_Angled_Black-720w.png";
   private static final String IMG_URL_MEDIA =
       "http://storage.googleapis.com/automotive-media/album_art.jpg";
   private static final String MEDIA_SOURCE =
       "http://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3";
 
   private static final String[] IMAGES =
-          new String[]{IMG_URL_AOG, IMG_URL_GOOGLE_HOME, IMG_URL_GOOGLE_PIXEL};
+      new String[]{IMG_URL_AOG, IMG_URL_GOOGLE_HOME, IMG_URL_GOOGLE_PIXEL};
 
   private static final String[] SUGGESTIONS =
-          new String[]{"Basic Card", "Browse Carousel", "Carousel", "List", "Media", "Table Card"};
+      new String[]{"Basic Card", "Browse Carousel", "Carousel", "List", "Media", "Table Card"};
 
   @ForIntent("Default Welcome Intent")
   public ActionResponse welcome(ActionRequest request) {
     ResponseBuilder responseBuilder = getResponseBuilder(request);
     ResourceBundle rb = ResourceBundle.getBundle("resources", request.getLocale());
     responseBuilder
-            .add(
-                    new SimpleResponse()
-                            .setDisplayText(rb.getString("welcome_msg_1"))
-                            .setTextToSpeech(rb.getString("welcome_msg_2")))
-            .add(
-                    new SimpleResponse()
-                            .setTextToSpeech(rb.getString("welcome_more_1"))
-                            .setDisplayText(rb.getString("welcome_more_2")))
+        .add(
+            new SimpleResponse()
+                .setDisplayText(rb.getString("welcome_msg_1"))
+                .setTextToSpeech(rb.getString("welcome_msg_2")))
+        .add(
+            new SimpleResponse()
+                .setTextToSpeech(rb.getString("welcome_more_1"))
+                .setDisplayText(rb.getString("welcome_more_2")))
         .addSuggestions(SUGGESTIONS);
 
     return responseBuilder.build();
@@ -90,24 +107,24 @@ public class ConversationComponentsApp extends DialogflowApp {
     }
 
     Button learnMoreButton =
-            new Button()
-                    .setTitle(rb.getString("basic_card_button_text"))
-                    .setOpenUrlAction(new OpenUrlAction().setUrl("https://assistant.google.com"));
+        new Button()
+            .setTitle(rb.getString("basic_card_button_text"))
+            .setOpenUrlAction(new OpenUrlAction().setUrl("https://assistant.google.com"));
     List<Button> buttons = new ArrayList<>();
     buttons.add(learnMoreButton);
     String text = rb.getString("basic_card_text");
     responseBuilder
         .add(rb.getString("basic_card_response"))
-            .add(
-                    new BasicCard()
-                            .setTitle(rb.getString("basic_card_title"))
-                            .setSubtitle(rb.getString("basic_card_sub_title"))
-                            .setFormattedText(text)
-                            .setImage(
-                                    new Image()
-                                            .setUrl(IMG_URL_AOG)
-                                            .setAccessibilityText(rb.getString("basic_card_alt_text")))
-                            .setButtons(buttons))
+        .add(
+            new BasicCard()
+                .setTitle(rb.getString("basic_card_title"))
+                .setSubtitle(rb.getString("basic_card_sub_title"))
+                .setFormattedText(text)
+                .setImage(
+                    new Image()
+                        .setUrl(IMG_URL_AOG)
+                        .setAccessibilityText(rb.getString("basic_card_alt_text")))
+                .setButtons(buttons))
         .addSuggestions(SUGGESTIONS);
 
     return responseBuilder.build();
@@ -127,11 +144,11 @@ public class ConversationComponentsApp extends DialogflowApp {
       item = new ListSelectListItem();
       item.setTitle(getMsg(rb, "list_item_title", i + 1))
           .setDescription(getMsg(rb, "list_item_desc", i + 1))
-              .setImage(
-                      new Image()
-                              .setUrl(IMAGES[i])
-                              .setAccessibilityText(rb.getString("list_image_alt_text")))
-              .setOptionInfo(new OptionInfo().setKey(String.valueOf(i + 1)));
+          .setImage(
+              new Image()
+                  .setUrl(IMAGES[i])
+                  .setAccessibilityText(rb.getString("list_image_alt_text")))
+          .setOptionInfo(new OptionInfo().setKey(String.valueOf(i + 1)));
       items.add(item);
     }
 
@@ -157,11 +174,11 @@ public class ConversationComponentsApp extends DialogflowApp {
       item = new CarouselSelectCarouselItem();
       item.setTitle(getMsg(rb, "list_item_title", i + 1))
           .setDescription(getMsg(rb, "list_item_desc", i + 1))
-              .setImage(
-                      new Image()
-                              .setUrl(IMAGES[i])
-                              .setAccessibilityText(rb.getString("list_image_alt_text")))
-              .setOptionInfo(new OptionInfo().setKey(String.valueOf(i + 1)));
+          .setImage(
+              new Image()
+                  .setUrl(IMAGES[i])
+                  .setAccessibilityText(rb.getString("list_image_alt_text")))
+          .setOptionInfo(new OptionInfo().setKey(String.valueOf(i + 1)));
       items.add(item);
     }
 
@@ -191,7 +208,7 @@ public class ConversationComponentsApp extends DialogflowApp {
       item.setDescription(getMsg(rb, "list_item_desc", i + 1));
       item.setOpenUrlAction(new OpenUrlAction().setUrl(url));
       item.setImage(
-              new Image().setUrl(IMAGES[i]).setAccessibilityText(rb.getString("list_image_alt_text")));
+          new Image().setUrl(IMAGES[i]).setAccessibilityText(rb.getString("list_image_alt_text")));
       item.setFooter(getMsg(rb, "list_item_footer", i + 1));
       items.add(item);
     }
@@ -223,18 +240,18 @@ public class ConversationComponentsApp extends DialogflowApp {
 
     List<MediaObject> mediaObjects = new ArrayList<>();
     mediaObjects.add(
-            new MediaObject()
-                    .setName(rb.getString("media_name"))
-                    .setDescription(rb.getString("media_desc"))
-                    .setContentUrl(MEDIA_SOURCE)
-                    .setIcon(
-                            new Image()
-                                    .setUrl(IMG_URL_MEDIA)
-                                    .setAccessibilityText(rb.getString("media_image_alt_text"))));
+        new MediaObject()
+            .setName(rb.getString("media_name"))
+            .setDescription(rb.getString("media_desc"))
+            .setContentUrl(MEDIA_SOURCE)
+            .setIcon(
+                new Image()
+                    .setUrl(IMG_URL_MEDIA)
+                    .setAccessibilityText(rb.getString("media_image_alt_text"))));
     responseBuilder
         .add(rb.getString("media_response"))
         .addSuggestions(SUGGESTIONS)
-            .add(new MediaResponse().setMediaObjects(mediaObjects).setMediaType("AUDIO"));
+        .add(new MediaResponse().setMediaObjects(mediaObjects).setMediaType("AUDIO"));
     return responseBuilder.build();
   }
 
@@ -274,11 +291,11 @@ public class ConversationComponentsApp extends DialogflowApp {
     }
 
     TableCard table =
-            new TableCard()
-                    .setTitle(rb.getString("table_title"))
-                    .setSubtitle(rb.getString("table_subtitle"))
-                    .setColumnProperties(columnProperties)
-                    .setRows(rows);
+        new TableCard()
+            .setTitle(rb.getString("table_title"))
+            .setSubtitle(rb.getString("table_subtitle"))
+            .setColumnProperties(columnProperties)
+            .setRows(rows);
 
     responseBuilder.add(rb.getString("table_response")).add(table).addSuggestions(SUGGESTIONS);
     return responseBuilder.build();
@@ -297,10 +314,10 @@ public class ConversationComponentsApp extends DialogflowApp {
     ResponseBuilder responseBuilder = getResponseBuilder(request);
     ResourceBundle rb = ResourceBundle.getBundle("resources", request.getLocale());
     responseBuilder
-            .add(
-                    new SimpleResponse()
-                            .setDisplayText(rb.getString("bye_display_text"))
-                            .setTextToSpeech(rb.getString("bye_tts")))
+        .add(
+            new SimpleResponse()
+                .setDisplayText(rb.getString("bye_display_text"))
+                .setTextToSpeech(rb.getString("bye_tts")))
         .endConversation();
     return responseBuilder.build();
   }
