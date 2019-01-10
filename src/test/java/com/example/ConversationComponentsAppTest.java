@@ -16,13 +16,17 @@
 
 package com.example;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertTrue;
+
 import com.google.actions.api.ActionRequest;
 import com.google.actions.api.ActionResponse;
 import com.google.actions.api.test.MockRequestBuilder;
 import com.google.api.services.actions_fulfillment.v2.model.RichResponse;
 import org.junit.Test;
-
-import static junit.framework.TestCase.*;
 
 public class ConversationComponentsAppTest {
 
@@ -82,7 +86,7 @@ public class ConversationComponentsAppTest {
     assertEquals(2, richResponse.getItems().size());
     assertNotNull(richResponse.getItems().get(1).getMediaResponse());
     assertNotNull(
-            richResponse.getItems().get(1).getMediaResponse().getMediaObjects().get(0).getIcon());
+        richResponse.getItems().get(1).getMediaResponse().getMediaObjects().get(0).getIcon());
     assertNull(response.getHelperIntent());
     assertNotNull(response.getRichResponse().getSuggestions());
   }
@@ -93,7 +97,7 @@ public class ConversationComponentsAppTest {
     MockRequestBuilder requestBuilder = new MockRequestBuilder();
     // Tests with device that does not support media action.
     ActionRequest request =
-            requestBuilder.setIntent("media response").setMediaOutput(false).build();
+        requestBuilder.setIntent("media response").setMediaOutput(false).build();
 
     ActionResponse response = app.mediaResponse(request);
     RichResponse richResponse = response.getRichResponse();
@@ -106,7 +110,7 @@ public class ConversationComponentsAppTest {
     ConversationComponentsApp app = new ConversationComponentsApp();
     String status = "FINISHED";
     MockRequestBuilder requestBuilder =
-            MockRequestBuilder.PreBuilt.mediaPlaybackStatus(status, "handleMediaStatusEvent", true);
+        MockRequestBuilder.PreBuilt.mediaPlaybackStatus(status, "handleMediaStatusEvent", true);
     ActionRequest request = requestBuilder.build();
 
     ActionResponse response = app.handleMediaStatusEvent(request);

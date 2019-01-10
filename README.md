@@ -1,52 +1,46 @@
 # Actions on Google: Conversation Component Sample
 
-A simple sample showing the visual conversation components available with Actions on Google.
+A simple sample showing the visual conversation components available with Actions on Google in Java.
 
-## Setup Instructions
+### Setup Instructions
 
-### Webhook
-The sample includes entry points for both Google App Engine.
-
-#### Build for Google Cloud Platform
-    1. Delete ActionsAWSHandler.java
-    1. Remove the following line from build.gradle:
-       1. `apply from: 'build-aws.gradle'`
-    1. Download the [SDK for App Engine](https://cloud.google.com/appengine/docs/flexible/java/download)
-    1. Follow the steps for [Setting up a GCP project](https://cloud.google.com/appengine/docs/flexible/java/using-gradle#setting_up_and_validating_your_project_name_short)
-    1. Deploy to [App Engine using Gradle](https://cloud.google.com/appengine/docs/flexible/java/using-gradle) by running the following command: `gradle appengineDeploy`
-
-### Action configuration
-1. Use the [Actions on Google Console](https://console.actions.google.com) to add a new project with a name of your choosing and click *Create Project*.
-1. Click *Skip*, located on the top right.
-1. On the left navigation menu under *BUILD*, click on *Actions*. Click on *Add Your First Action* and choose your app's language(s).
-1. Select *Custom intent*, click *BUILD*. This will open a Dialogflow console. Click *CREATE*.
-1. Click on the gear icon to see the project settings.
-1. Select *Export and Import*.
-1. Select *Restore from zip*. Follow the directions to restore from the `agent.zip` file in this repo.
-1. Deploy the fulfillment webhook as described in the previous section
-1. Go back to the Dialogflow console and select *Fulfillment* from the left navigation menu. Enable *Webhook*, set the value of *URL* to the webhook from the previous section, then click *Save*.
+#### Action Configuration
+1. From the [Actions on Google Console](https://console.actions.google.com/), add a new project (this will become your *Project ID*) > **Create Project** > **Skip**.
+1. From the left navigation menu under **Build** > **Actions** > **Add Your First Action** > **BUILD** (this will bring you to the Dialogflow console) > Select language and time zone > **CREATE**.
+1. In Dialogflow, go to **Settings** ⚙ > **Export and Import** > **Restore from zip**.
+    + Follow the directions to restore from the `agent.zip` file in this repo.
 
 
-### Test on the Actions on Google simulator
-1. Select [*Integrations*](https://console.dialogflow.com/api-client/#/agent//integrations) from the left navigation menu and open the *Settings* menu for Actions on Google.
-1. Enable *Auto-preview changes* and Click *Test*. This will open the Actions on Google simulator.
-1. Type `Talk to my test app` in the simulator, or say `OK Google, talk to my test app` to any Actions on Google enabled device signed into your developer account.
+#### App Engine Deployment & Webhook Configuration
+When a new project is created using the Actions Console, it also creates a Google Cloud project in the background.
 
-For more detailed information on deployment, see the [documentation](https://developers.google.com/actions/dialogflow/deploy-fulfillment).
+1. Download & install the [Google Cloud SDK](https://cloud.google.com/sdk/docs/)
+1. Configure the gcloud CLI and set your Google Cloud project to the name of your Actions on Google Project ID, which you can find from the [Actions on Google console](https://console.actions.google.com/) under Settings ⚙
+    + `gcloud init`
+    + `gcloud auth application-default login`
+    + `gcloud components install app-engine-java`
+    + `gcloud components update`
+1. Deploy to [App Engine using Gradle](https://cloud.google.com/appengine/docs/flexible/java/using-gradle):
+    + `gradle appengineDeploy` OR
+    +  From within IntelliJ, open the Gradle tray and run the appEngineDeploy task.
+1. Back in the [Dialogflow console](https://console.dialogflow.com), from the left navigation menu under **Fulfillment** > **Enable Webhook**, set the value of **URL** to `https://<YOUR_PROJECT_ID>.appspot.com` > **Save**.
 
-## References and How to report bugs
-* Actions on Google documentation: [https://developers.google.com/actions/](https://developers.google.com/actions/).
-* If you find any issues, please open a bug here on GitHub.
-* Questions are answered on [StackOverflow](https://stackoverflow.com/questions/tagged/actions-on-google).
+#### Testing this Sample
+1. In the [Dialogflow console](https://console.dialogflow.com), from the left navigation menu > **Integrations** > **Integration Settings** under Google Assistant > Enable **Auto-preview changes** >  **Test** to open the Actions on Google simulator.
+1. Type `Talk to my test app` in the simulator, or say `OK Google, talk to my test app` to Google Assistant on a mobile device associated with your Action's account.
 
-## How to make contributions?
+### References & Issues
++ Questions? Go to [StackOverflow](https://stackoverflow.com/questions/tagged/actions-on-google), [Actions on Google G+ Developer Community](https://g.co/actionsdev), or [Support](https://developers.google.com/actions/support/).
++ For bugs, please report an issue on Github.
++ For Actions on Google [documentation](https://developers.google.com/actions/).
++ For specifics about [Gradle & the App Engine Plugin](https://cloud.google.com/appengine/docs/flexible/java/using-gradle).
++ For details on deploying [Java apps with App Engine](https://cloud.google.com/appengine/docs/standard/java/quickstart).
+
+### Make Contributions
 Please read and follow the steps in the [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## License
+### License
 See [LICENSE](LICENSE).
 
-## Terms
+### Terms
 Your use of this sample is subject to, and by using or downloading the sample files you agree to comply with, the [Google APIs Terms of Service](https://developers.google.com/terms/).
-
-## Google+
-Actions on Google Developers Community on Google+ [https://g.co/actionsdev](https://g.co/actionsdev).
